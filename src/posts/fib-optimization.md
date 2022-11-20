@@ -1,0 +1,309 @@
+---
+title: Algoritmo para el cálculo de los términos de la secuencia de Fibonacci con complejidad O(log(n))
+description: "Se muestra una implementación eficiente para calcular los términos de la secuencia de fibonacci en tiempo logarítmico O(log(n))"
+author: "Miguel Angel Carrasco"
+date: 2022-11-14
+---
+
+## Introducción
+
+Un problema muy recurrente en el estudio de algoritmos es la recursividad, para la cual se suele presentar de ejemplo clásico la
+famosa sucesión de Fibonacci, que está definida como la sucesión de enteros donde cada término está compuesto por la suma de
+los dos términos anteriores, empezando por el $0$ y el $1$
+
+$$ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ... $$
+
+La cual se puede escribir como
+
+$$
+\begin{aligned}
+F_0 &= 0 \\
+F_1 &= 1 \\
+F_n &= F_{n-1} + F_{n-2}, \forall n \in \mathbb{N} \land n > 1
+\end{aligned}
+$$
+
+La forma anterior de definir la secuencia de fibonacci resulta muy conveniente
+para programar una función recursiva que calcule el valor de $F_n$ en algún lenguaje de programación,
+como por ejemplo en lenguaje C
+
+```cpp
+int fib(int n){
+    if(n == 0){
+        return 0;
+    }
+
+    if(n == 1){
+        return 1;
+    }
+    return fib(n - 1) + fib(n - 2);
+}
+```
+El gran inconveniente con esta implementación es que su complejidad algorítmica resulta ser exponencial.
+Podemos observar que por cada llamada a esta función, la mayoría de las veces se "expanden" otras
+dos llamadas. Por lo que su complejidad se acerca a $O(2^n)$. Por ejemplo para calcular fib(6), se tienen
+que hacer 25 llamadas a la misma función, muchas de las cuales repiten innecesariamente el mismo cálculo.
+
+En este artículo presento ideas interesantes para reducir la complejidad computacional de este problema con diferentes
+algoritmos.
+
+## Reducción a tiempo lineal $O(n)$
+
+Una mejora en la implementación permite bajar la complejidad a $O(n)$, es decir, resolver el problema
+en tiempo lineal. Como por ejemplo la función de recursión de cola (tail recursion) siguiente
+
+```cpp
+unsigned long fib(unsigned long n, unsigned long currentVal = 1,
+    unsigned long previousVal = 0) {
+    if (n == 0) {
+        return previousVal;
+    }
+
+    if (n == 1) {
+        return currentVal;
+    }
+    return fib(n - 1, currentVal + previousVal, currentVal);
+}
+```
+Donde básicamente se calcula la suma de todos los componentes de la sucesión hasta alcanzar el término buscado.
+Aun así queda la duda de si podría existir una implementación más eficiente. De hecho se puede reducir a un problema
+que se resuelve en tiempo logarítmico, es decir, existe un algoritmo con complejidad $O(\log(n))$.
+
+## Reducción a $O(log(n))$ usando la fórmula de Binet
+
+En el caso de la secuencia de Fibonacci se le atribuye a [Jacques Philippe Marie Binet](https://en.wikipedia.org/w/index.php?title=Jacques_philippe_Marie_Binet&oldid=1067689697)
+la siguiente fórmula explícita para obtener $F_n$
+
+$$ \boxed{ F_n = \frac{1}{\sqrt{5}} \left[ \left( \frac{1+\sqrt{5}}{2} \right)^n - \left( \frac{1-\sqrt{5}}{2} \right)^n \right] }$$
+
+Otra forma de escribir esta fórmula es la siguiente
+
+$$ \boxed{ F_n = \frac{1}{\sqrt{5}} \left[ \varphi^n - \psi^n \right] } $$
+
+donde $\varphi=\frac{1+\sqrt{5}}{2}$ y $\psi=\frac{1-\sqrt{5}}{2}$
+
+A $\varphi$ se le suele denominar la [proporción áurea](https://en.wikipedia.org/wiki/Golden_ratio).
+
+Escribí anteriormente un [artículo con la demostración de la fórmula de Binet mediante inducción fuerte
+y también derivando la fórmula usando resultados del álgebra lineal](binet-formula).
+Es importante revisar este artículo para comprender mejor las siguientes optimizaciones.
+
+Una implementación de la fórmula de Binet en C, podría ser la siguiente
+
+```cpp
+const long double FIVE_SQUARE = pow(5, 0.5);
+const long double PHI = (1 + FIVE_SQUARE) / 2;
+const long double PSI = (1 - FIVE_SQUARE) / 2;
+
+unsigned long fib(unsigned long n) {
+    return ((pow(PHI, n) - pow(PSI, n)) / FIVE_SQUARE);
+}
+```
+La cual nos reduce la complejidad algorítmica aún más a $O(\log(n))$, ya que la manera más eficiente conocida de elevar
+a la potencia $n$ tiene complejidad $O(\log(n))$ usando la [exponenciación por cuadrados](https://en.wikipedia.org/wiki/Exponentiation_by_squaring).
+Esta idea es muy importante para los siguientes algoritmos.
+
+El único problema de esta implementación es que en algún punto aparecen errores de redondeo conforme aumenta $n$.
+En esta implementación en C, a partir de $n > 71$, aparecen errores en el resultado.
+Sin embargo, resulta bastante interesante como usando una fórmula explicita es posible reducir la complejidad a tiempo
+logarítmico.
+
+## Optimización a $O(log(n))$ sin pérdida de precisión por errores de redondeo
+En el algoritmo anterior que usa la fórmula de Binet, notamos que su complejidad es logarítmica, únicamente
+porque para elevar un número a la potencia $n$, el algoritmo más eficiente es la [exponenciación por cuadrados](https://en.wikipedia.org/wiki/Exponentiation_by_squaring).
+De no ser por esta razón las demás operaciones se hacen idealmente, en tiempo constante $O(1)$.
+
+Para entender el siguiente algoritmo que conserva la complejidad logarítmica sin perder precisión, tenemos que
+entender bien la exponenciación por cuadrados.
+
+### Exponenciación por cuadrados
+
+La exponenciación es una operación muy importante en la teoría algorítmica de números.
+Por ejemplo, se usa intensamente en muchas pruebas de primalidad y algoritmos de factorización.
+Por lo tanto, se han estudiado métodos eficientes durante siglos.
+
+En los criptosistemas basados en el problema del logaritmo discreto, la exponenciación suele ser la parte que
+consume más tiempo y, es por esta razón, que determina la eficiencia de los protocolos criptográficos
+como el intercambio de llaves de Diffie-Hellman, el algoritmo ElGamal para la cripotgrafía de llave pública
+y algoritmos para firma digital.
+
+la exponenciación por cuadrados consiste en que podemos simplificar el cálculo de potencias muy grandes,
+debido a la observación de que dado un entero positivo $n$, sabemos que
+
+$$
+x^n =
+\begin{cases}
+x(x^2)^{\frac{n-1}{2}} &\text{si } n \text{ es impar}\\
+(x^2)^{\frac{n}{2}} &\text{si } n \text{ es par}
+\end{cases}
+$$
+
+Por ejemplo si queremos calcular $2^{10}$, en lugar de hacer $10$ multiplicaciones
+
+$$
+2^{10}=2\cdot2\cdot2\cdot2\cdot2\cdot2\cdot2\cdot2\cdot2\cdot2\cdot=1024
+$$
+
+Podemos hacer menos operaciones. Aplicando primeramente la regla anterior, dado que $10$ es par
+
+$$
+2^{10} = (2\cdot2)^{\frac{10}{2}}=(4)^{5}
+$$
+
+Al multiplicar $2\cdot2$ y hacer la división $\frac{10}{2}=5$ llevamos dos operaciones.
+Luego volvemos a aplicar la regla anterior, pero notando que $5$ es impar
+
+$$
+4^5 = 4(4\cdot4)^2 = 4(16)^2 = 4(256) = 1024
+$$
+
+En este último paso hicimos primero $4\cdot4=16$, luego $16\cdot16=256$ y finalmente $4(256)=1024$, es decir,
+3 operaciones más. Con lo cual reducimos el número de operaciones a 5 en lugar de 10.
+
+Una implementación en C recursiva de la exponenciación por cuadrados es la siguiente
+
+```cpp
+int exponentiation(int a, int b){
+    if(b==1)
+        return a;
+    if(b%2==1)
+        return a*exponentiation(a, b-1);
+    int tmp_exp = exponentiation(a, b/2)
+    return tmp_exp * tmp_exp;
+}
+```
+Es claro que el número de llamadas a esta función será de $\lceil\log_{2}n\rceil$. Lo interesante de la exponenciación
+por cuadrados es que no solo sirve para multiplicar números, sino que este resultado es válido para [semigrupos](https://en.wikipedia.org/wiki/Semigroup).
+
+**Definición** Un semigrupo es un conjunto $S$, junto con una operación binaria $\cdot$, que es una función
+$\cdot:S\rightarrow S \times S$, que es asociativa. Es decir, para todo $a,b,c \in S$ se cumple que $a\cdot(b \cdot c) = (a \cdot b) \cdot c$
+
+Es claro que el conjunto de matrices cuadradas de $n \times n$, junto con la multiplicación matricial, forman un semigrupo.
+La multiplicación de matrices es cerrada y asociativa.
+
+> Un semigrupo puede ser visto como un [magma](https://en.wikipedia.org/wiki/Magma_(algebra)) que además es asociativo.
+> Un [grupo](https://en.wikipedia.org/wiki/Group_(mathematics)) es una subclase de semigrupo. En particular el
+> [grupo general lineal](https://en.wikipedia.org/wiki/General_linear_group) $GL(n,\mathbb{F})$ de grado $n$ sobre el
+> cuerpo (o campo) $\mathbb{F}$, si se usa el cuerpo de los reales o complejos, puede ser visto como el grupo formado
+> por matrices cuadradas invertibles de $n \times n$ con la multiplicación de matrices. Este grupo en particular
+> forma un [Grupo de Lie](https://en.wikipedia.org/wiki/Lie_group), ya que forma también una variedad diferencial.
+> Los grupos de Lie son ampliamente utilizados en la matemática moderna y en la física. En la física se usan en el [modelo de partículas estandard](https://en.wikipedia.org/wiki/Standard_Model),
+> ya que es un tipo de [teoría de campo de gauge](https://en.wikipedia.org/wiki/Gauge_theory), donde los grupos de Lie son fundamentales.
+> Los semigrupos también son ampliamente utilizados en la teoría algebráica de autómatas finitos y en la criptografía elíptica.
+
+Podemos entonces usar la forma matricial de la relación de recurrencia de la secuencia de fibonacci que se usó para
+[derivar la fórmula de binet en el artículo anterior](binet-formula)
+
+$$
+\begin{bmatrix}
+F_{n+1} \\
+F_{n}
+\end{bmatrix} =
+\begin{bmatrix}
+1 & 1\\
+1 & 0
+\end{bmatrix}^n
+\begin{bmatrix}
+F_1 \\
+F_0
+\end{bmatrix}
+$$
+
+Y utilizar la exponenciación por cuadrados para elevar a la potencia $n$ la matriz
+$\begin{bmatrix}
+1 & 1\\
+1 & 0
+\end{bmatrix}$. Que sobre el semigrupo formado por las matrices de $2 \times 2$ es también válido.
+
+Por lo que podemos escribir la siguiente implementación que utiliza la exponenciación por cuadrados de esta matriz
+para calcular $F_n$ en tiempo logarítmico, es decir con complejidad computacional $O(\log(n))$.
+
+```cpp
+/**
+ * Multiplica la matriz a por la matrix b y deposita el resultado
+ * en la matriz r
+ *
+ * @param a matriz de 2x2 como un arreglo bidimensional
+ * @param b matriz de 2x2 como un arreglo bidimensional
+ * @param r matriz resultado de 2x2 como arreglo bidimensional
+ */
+void matrixMultiply(unsigned long a[2][2], unsigned long b[2][2],
+    unsigned long r[2][2]) {
+
+    unsigned long r00 = a[0][0] * b[0][0] + a[0][1] * b[1][0];
+    unsigned long r01 = a[0][0] * b[0][1] + a[0][1] * b[1][1];
+    unsigned long r10 = a[1][0] * b[0][0] + a[1][1] * b[1][0];
+    unsigned long r11 = a[1][0] * b[0][1] + a[1][1] * b[1][1];
+
+    r[0][0] = r00;
+    r[0][1] = r01;
+    r[1][0] = r10;
+    r[1][1] = r11;
+}
+
+
+/**
+ * Eleva la matriz "a" a la potencia n y deposita el resultado en "r"
+ * usando exponenciación por cuadrados
+ *
+ * @param a matriz de 2x2 como un arreglo bidimensional
+ * @param n un entero que representa la potencia a la que se elevará a
+ * @param r matriz resultado de 2x2 como arreglo bidimensional
+ * @return
+ */
+void power(unsigned long a[2][2], int n, unsigned long r[2][2]) {
+    // deposita la matriz identidad en r
+    if (n == 0) {
+        r[0][0] = 1;
+        r[0][1] = 0;
+        r[1][0] = 0;
+        r[1][1] = 1;
+        return;
+    }
+
+    // copia a en r
+    if (n == 1) {
+        for (int j = 0; j < 2; j++) {
+            for (int i = 0; i < 2; i++) {
+                r[j][i] = a[j][i];
+            }
+        }
+        return;
+    }
+
+    unsigned long a2[2][2];
+    matrixMultiply(a, a, a2);
+
+    if (n % 2 == 0) {
+        power(a2, n / 2, r);
+    } else {
+        power(a2, (n - 1) / 2, r);
+        matrixMultiply(a, r, r);
+    }
+}
+
+unsigned long fib(unsigned long n) {
+    unsigned long a[2][2] = { {1, 1},
+                              {1, 0} };
+    unsigned long r[2][2];
+
+    power(a, n, r);
+
+    return r[1][0];
+}
+```
+
+Lo interesante de esta implementación es que no sacrifica precisión y no genera errores de redondeo como en la
+implementación de la fórmula de Binet, con la misma complejidad algorítmica $O(\log(n))$.
+
+## Referencias
+
+- [Wikipedia: Fibonacci Number](https://en.wikipedia.org/wiki/Fibonacci_number)
+- [Wikipedia: Exponentiation by squaring](https://en.wikipedia.org/wiki/Exponentiation_by_squaring)
+- Fibonacci and Lucas Numbers with Applications, Volume 1, 2nd Edition - Thomas Koshy
+- Handbook of Elliptic and Hyperelliptic Curve Cryptography - Kenneth H. Rosen, Ph.D.
+- [ICS 161: Design and Analysis of Algorithms - Lecture notes for January 9, 1996 - David Eppstein](https://www.ics.uci.edu/~eppstein/161/960109.html)
+- [Why is the complexity of computing the Fibonacci series 2^n and not n^2?](https://stackoverflow.com/questions/7547133/why-is-the-complexity-of-computing-the-fibonacci-series-2n-and-not-n2)
+- [The Fibonacci Sequence - Thomas Browning](https://math.berkeley.edu/~tb65536/Fibonacci_Exposition.pdf)
+- [Program for nth fibonacci - Geek for geeks](https://www.geeksforgeeks.org/program-for-nth-fibonacci-number/)
+- [Fibonacci Numbers Algorithm - The GNU Multiple Precision Arithmetic Library](https://gmplib.org/manual/Fibonacci-Numbers-Algorithm)
