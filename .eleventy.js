@@ -15,10 +15,10 @@ module.exports = function (eleventyConfig) {
                 .replace(/\\\n/g, "\\\\");
             // console.log(equation)
 
-            return "<span class=\"katex-display\">"+katex.renderToString(cleanEquation, {
+            return "<span class=\"katex-display\">" + katex.renderToString(cleanEquation, {
                 throwOnError: false,
                 output: "html",
-            })+"</span>";
+            }) + "</span>";
         });
     });
 
