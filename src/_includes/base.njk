@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="google-site-verification" content="tm5Y6ZNTf-lBqbwniGjQPv1q02o2TuUQZ9GTYa4SMLg"/>
+    <title>{{ title }}</title>
+
+    <meta name="description"
+          content={{ description }}/>
+    <meta name="keywords" content="latex.css,css library,class-less css,latex css"/>
+    <meta property="og:title" content="LaTeX.css"/>
+    <meta property="og:url" content="https://latex.now.sh"/>
+    <meta property="og:description"
+          content="A minimal, almost class-less CSS library to write modern websites that look like LaTeX documents."/>
+    <meta property="og:type" content="website"/>
+
+    <link rel="stylesheet" href="css/style.css"/>
+    <link rel="stylesheet" href="css/katex.min.css"/>
+</head>
+
+<body id="top">
+<header>
+    <h1>{{ title }}</h1>
+    <p class="author">
+        {{ author }}
+    </p>
+</header>
+
+<div class="abstract">
+    <h2>Resumen</h2>
+    <p>
+        {{ description }}
+    </p>
+</div>
+
+<main>
+    <article>
+        {{ content | latexdisplay | latex | safe }}
+    </article>
+</main>
+
+<script async src="prism/prism.js"></script>
+
+</body>
+
+</html>
