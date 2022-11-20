@@ -1,14 +1,17 @@
 ---
 title: Algoritmo para el cálculo de los términos de la secuencia de Fibonacci con complejidad O(log(n))
-description: "Se muestra una implementación eficiente para calcular los términos de la secuencia de fibonacci en tiempo logarítmico O(log(n))"
+description: "Se muestra una implementación eficiente para calcular los términos de la secuencia de fibonacci en tiempo
+logarítmico O(log(n))"
 author: "Miguel Angel Carrasco"
 date: 2022-11-14
 ---
 
 ## Introducción
 
-Un problema muy recurrente en el estudio de algoritmos es la recursividad, para la cual se suele presentar de ejemplo clásico la
-famosa sucesión de Fibonacci, que está definida como la sucesión de enteros donde cada término está compuesto por la suma de
+Un problema muy recurrente en el estudio de algoritmos es la recursividad, para la cual se suele presentar de ejemplo
+clásico la
+famosa sucesión de Fibonacci, que está definida como la sucesión de enteros donde cada término está compuesto por la
+suma de
 los dos términos anteriores, empezando por el $0$ y el $1$
 
 $$ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, ... $$
@@ -39,10 +42,13 @@ int fib(int n){
     return fib(n - 1) + fib(n - 2);
 }
 ```
+
 El gran inconveniente con esta implementación es que su complejidad algorítmica resulta ser exponencial.
 Podemos observar que por cada llamada a esta función, la mayoría de las veces se "expanden" otras
 dos llamadas. Por lo que su complejidad se acerca a $O(2^n)$. Por ejemplo para calcular fib(6), se tienen
 que hacer 25 llamadas a la misma función, muchas de las cuales repiten innecesariamente el mismo cálculo.
+
+![árbol de llamadas para la implementación recursiva para fib(6)](/assets/fibonacci.svg)
 
 En este artículo presento ideas interesantes para reducir la complejidad computacional de este problema con diferentes
 algoritmos.
@@ -65,16 +71,19 @@ unsigned long fib(unsigned long n, unsigned long currentVal = 1,
     return fib(n - 1, currentVal + previousVal, currentVal);
 }
 ```
+
 Donde básicamente se calcula la suma de todos los componentes de la sucesión hasta alcanzar el término buscado.
 Aun así queda la duda de si podría existir una implementación más eficiente. De hecho se puede reducir a un problema
 que se resuelve en tiempo logarítmico, es decir, existe un algoritmo con complejidad $O(\log(n))$.
 
 ## Reducción a $O(log(n))$ usando la fórmula de Binet
 
-En el caso de la secuencia de Fibonacci se le atribuye a [Jacques Philippe Marie Binet](https://en.wikipedia.org/w/index.php?title=Jacques_philippe_Marie_Binet&oldid=1067689697)
+En el caso de la secuencia de Fibonacci se le atribuye
+a [Jacques Philippe Marie Binet](https://en.wikipedia.org/w/index.php?title=Jacques_philippe_Marie_Binet&oldid=1067689697)
 la siguiente fórmula explícita para obtener $F_n$
 
-$$ \boxed{ F_n = \frac{1}{\sqrt{5}} \left[ \left( \frac{1+\sqrt{5}}{2} \right)^n - \left( \frac{1-\sqrt{5}}{2} \right)^n \right] }$$
+$$ \boxed{ F_n = \frac{1}{\sqrt{5}}
+\left[ \left( \frac{1+\sqrt{5}}{2} \right)^n - \left( \frac{1-\sqrt{5}}{2} \right)^n \right] }$$
 
 Otra forma de escribir esta fórmula es la siguiente
 
@@ -99,8 +108,10 @@ unsigned long fib(unsigned long n) {
     return ((pow(PHI, n) - pow(PSI, n)) / FIVE_SQUARE);
 }
 ```
+
 La cual nos reduce la complejidad algorítmica aún más a $O(\log(n))$, ya que la manera más eficiente conocida de elevar
-a la potencia $n$ tiene complejidad $O(\log(n))$ usando la [exponenciación por cuadrados](https://en.wikipedia.org/wiki/Exponentiation_by_squaring).
+a la potencia $n$ tiene complejidad $O(\log(n))$ usando
+la [exponenciación por cuadrados](https://en.wikipedia.org/wiki/Exponentiation_by_squaring).
 Esta idea es muy importante para los siguientes algoritmos.
 
 El único problema de esta implementación es que en algún punto aparecen errores de redondeo conforme aumenta $n$.
@@ -109,8 +120,10 @@ Sin embargo, resulta bastante interesante como usando una fórmula explicita es 
 logarítmico.
 
 ## Optimización a $O(log(n))$ sin pérdida de precisión por errores de redondeo
+
 En el algoritmo anterior que usa la fórmula de Binet, notamos que su complejidad es logarítmica, únicamente
-porque para elevar un número a la potencia $n$, el algoritmo más eficiente es la [exponenciación por cuadrados](https://en.wikipedia.org/wiki/Exponentiation_by_squaring).
+porque para elevar un número a la potencia $n$, el algoritmo más eficiente es
+la [exponenciación por cuadrados](https://en.wikipedia.org/wiki/Exponentiation_by_squaring).
 De no ser por esta razón las demás operaciones se hacen idealmente, en tiempo constante $O(1)$.
 
 Para entender el siguiente algoritmo que conserva la complejidad logarítmica sin perder precisión, tenemos que
@@ -172,13 +185,17 @@ int exponentiation(int a, int b){
     return tmp_exp * tmp_exp;
 }
 ```
+
 Es claro que el número de llamadas a esta función será de $\lceil\log_{2}n\rceil$. Lo interesante de la exponenciación
-por cuadrados es que no solo sirve para multiplicar números, sino que este resultado es válido para [semigrupos](https://en.wikipedia.org/wiki/Semigroup).
+por cuadrados es que no solo sirve para multiplicar números, sino que este resultado es válido
+para [semigrupos](https://en.wikipedia.org/wiki/Semigroup).
 
 **Definición** Un semigrupo es un conjunto $S$, junto con una operación binaria $\cdot$, que es una función
-$\cdot:S\rightarrow S \times S$, que es asociativa. Es decir, para todo $a,b,c \in S$ se cumple que $a\cdot(b \cdot c) = (a \cdot b) \cdot c$
+$\cdot:S\rightarrow S \times S$, que es asociativa. Es decir, para todo $a,b,c \in S$ se cumple que $a\cdot(b \cdot c)
+= (a \cdot b) \cdot c$
 
-Es claro que el conjunto de matrices cuadradas de $n \times n$, junto con la multiplicación matricial, forman un semigrupo.
+Es claro que el conjunto de matrices cuadradas de $n \times n$, junto con la multiplicación matricial, forman un
+semigrupo.
 La multiplicación de matrices es cerrada y asociativa.
 
 > Un semigrupo puede ser visto como un [magma](https://en.wikipedia.org/wiki/Magma_(algebra)) que además es asociativo.
@@ -187,9 +204,12 @@ La multiplicación de matrices es cerrada y asociativa.
 > cuerpo (o campo) $\mathbb{F}$, si se usa el cuerpo de los reales o complejos, puede ser visto como el grupo formado
 > por matrices cuadradas invertibles de $n \times n$ con la multiplicación de matrices. Este grupo en particular
 > forma un [Grupo de Lie](https://en.wikipedia.org/wiki/Lie_group), ya que forma también una variedad diferencial.
-> Los grupos de Lie son ampliamente utilizados en la matemática moderna y en la física. En la física se usan en el [modelo de partículas estandard](https://en.wikipedia.org/wiki/Standard_Model),
-> ya que es un tipo de [teoría de campo de gauge](https://en.wikipedia.org/wiki/Gauge_theory), donde los grupos de Lie son fundamentales.
-> Los semigrupos también son ampliamente utilizados en la teoría algebráica de autómatas finitos y en la criptografía elíptica.
+> Los grupos de Lie son ampliamente utilizados en la matemática moderna y en la física. En la física se usan en
+> el [modelo de partículas estandard](https://en.wikipedia.org/wiki/Standard_Model),
+> ya que es un tipo de [teoría de campo de gauge](https://en.wikipedia.org/wiki/Gauge_theory), donde los grupos de Lie
+> son fundamentales.
+> Los semigrupos también son ampliamente utilizados en la teoría algebráica de autómatas finitos y en la criptografía
+> elíptica.
 
 Podemos entonces usar la forma matricial de la relación de recurrencia de la secuencia de fibonacci que se usó para
 [derivar la fórmula de binet en el artículo anterior](binet-formula)
