@@ -4,45 +4,49 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="google-site-verification" content="tm5Y6ZNTf-lBqbwniGjQPv1q02o2TuUQZ9GTYa4SMLg"/>
     <title>{{ title }}</title>
 
     <meta name="description"
           content={{ description }}/>
     <meta name="keywords" content="latex.css,css library,class-less css,latex css"/>
-    <meta property="og:title" content="LaTeX.css"/>
-    <meta property="og:url" content="https://latex.now.sh"/>
+    <meta property="og:title" content={{ title }}/>
+    <meta property="og:url" content="{{ url }}"/>
     <meta property="og:description"
-          content="A minimal, almost class-less CSS library to write modern websites that look like LaTeX documents."/>
+          content={{ description }}/>
     <meta property="og:type" content="website"/>
 
-    <link rel="stylesheet" href="css/style.css"/>
-    <link rel="stylesheet" href="css/katex.min.css"/>
+    <link rel="stylesheet" href="/css/style.css"/>
+    <link rel="stylesheet" href="/css/katex.min.css"/>
 </head>
 
 <body id="top">
 <header>
     <h1>{{ title }}</h1>
-    <p class="author">
-        {{ author }}
-    </p>
+    <nav>
+        <span class="nav-bar-item"><a class="link" href="/">Posts</a></span>
+        <span class="nav-bar-item"><a class="link" href="/posts/">Archivo</a></span>
+        <span class="nav-bar-item"><a class="link" href="/about/">Acerca de</a></span>
+    </nav>
 </header>
-
-<div class="abstract">
-    <h2>Resumen</h2>
-    <p>
-        {{ description }}
-    </p>
-</div>
-
 <main>
-    <article>
-        {{ content | latexdisplay | latex | safe }}
-    </article>
+    {% for post in collections.posts %}
+        <div class="post">
+            <h3><a href={{ post.url }}>{{ post.data.title }}</a>
+                <time>{{ post.date.toLocaleDateString('es-es',{ year: 'numeric', month: 'numeric', day: 'numeric' }) }}</time>
+                {#                <time>{{ post.date.toLocaleDateString('es-es') }}</time> #}
+            </h3>
+            <div class="content"><p>{{ post.data.description }}</p></div>
+        </div>
+    {% endfor %}
 </main>
-
-<script async src="prism/prism.js"></script>
-
+<footer id="footer">
+    <div><span>© 2021 </span> - <span>2022</span></div>
+    <div><span>Miguel Angel Carrasco</span></div>
+    <div class="footnote">
+        <span>Sigueme en <a class="link" href="https://github.com/miguelcarrasco">GitHub</a>,
+            contacto: <a href="mailto:blog@miguelangelcarrasco.com">blog@miguelangelcarrasco.com</a>
+        </span>
+    </div>
+</footer>
 </body>
-
 </html>
