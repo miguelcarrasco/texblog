@@ -320,6 +320,10 @@ caption::before {
   font-weight: bold;
 }
 
+.description {
+  text-align: center;
+}
+
 /* allow scroll on the x-axis */
 .scroll-wrapper {
   overflow-x: auto;
@@ -370,18 +374,18 @@ footer {
 }
 
 /* Nested ordered list for ToC */
-/*nav ol {*/
-/*  counter-reset: item;*/
-/*  padding-left: 2rem;*/
-/*}*/
-/*nav li {*/
-/*  display: block;*/
-/*}*/
-/*nav li:before {*/
-/*  content: counters(item, '.') ' ';*/
-/*  counter-increment: item;*/
-/*  padding-right: 0.85rem;*/
-/*}*/
+nav ol {
+  counter-reset: item;
+  padding-left: 2rem;
+}
+nav li {
+  display: block;
+}
+nav li:before {
+  content: counters(item, '.') ' ';
+  counter-increment: item;
+  padding-right: 0.85rem;
+}
 
 /* Center definitions (most useful for display equations) */
 dl dd {

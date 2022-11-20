@@ -1,0 +1,18 @@
+---
+layout: base.njk
+---
+<hr>
+<div>
+    <h1>{{ title }}</h1>
+</div>
+<p class="author">
+    {{ author }} <br>
+    {{ date.toLocaleDateString('es-es',{ year: 'numeric', month: 'long', day: 'numeric' }) }}
+</p>
+<div class="abstract">
+    <h2>Resumen</h2>
+    <p>
+        {{ description }}
+    </p>
+</div>
+{{ content | latexdisplay | latex | safe }}

@@ -1,7 +1,6 @@
 ---
 title: Regresión Lineal Simple
 description: "Derivación de las fórmulas de regresión lineal simple"
-layout: postbase.njk
 author: "Miguel Angel Carrasco"
 date: 2021-01-09
 ---

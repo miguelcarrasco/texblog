@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>{{ title }}</title>
+    <title>{{ site.title }}</title>
 
     <meta name="description"
-          content={{ description }}/>
+          content={{ site.description }}/>
     <meta name="keywords" content="latex.css,css library,class-less css,latex css"/>
-    <meta property="og:title" content={{ title }}/>
-    <meta property="og:url" content="{{ url }}"/>
+    <meta property="og:title" content={{ site.title }}/>
+    <meta property="og:url" content="{{ site.url }}"/>
     <meta property="og:description"
-          content={{ description }}/>
+          content={{ site.description }}/>
     <meta property="og:type" content="website"/>
 
     <link rel="stylesheet" href="/css/style.css"/>
@@ -21,30 +21,23 @@
 
 <body id="top">
 <header>
-    <h1>{{ title }}</h1>
+    <h1>{{ site.title }}</h1>
     <nav>
         <span class="nav-bar-item"><a class="link" href="/">Posts</a></span>
         <span class="nav-bar-item"><a class="link" href="/posts/">Archivo</a></span>
         <span class="nav-bar-item"><a class="link" href="/about/">Acerca de</a></span>
     </nav>
 </header>
+
 <main>
-    {% for post in collections.posts %}
-        <div class="post">
-            <h3><a href={{ post.url }}>{{ post.data.title }}</a>
-                <time>{{ post.date.toLocaleDateString('es-es',{ year: 'numeric', month: 'numeric', day: 'numeric' }) }}</time>
-                {#                <time>{{ post.date.toLocaleDateString('es-es') }}</time> #}
-            </h3>
-            <div class="content"><p>{{ post.data.description }}</p></div>
-        </div>
-    {% endfor %}
+    {{ content | latexdisplay | latex | safe }}
 </main>
 <footer id="footer">
-    <div><span>© 2021 </span> - <span>2022</span></div>
-    <div><span>Miguel Angel Carrasco</span></div>
+    <div><span>© 2021 </span> - <span> {{ site.lastModifiedDate.getFullYear() }}</span></div>
+    <div><span>{{ site.author }}</span></div>
     <div class="footnote">
-        <span>Sigueme en <a class="link" href="https://github.com/miguelcarrasco">GitHub</a>,
-            contacto: <a href="mailto:blog@miguelangelcarrasco.com">blog@miguelangelcarrasco.com</a>
+        <span>Sigueme en <a class="link" href={{ site.github }}>GitHub</a>,
+            email: <a href="mailto:{{ site.email }}"> {{ site.email }}</a>
         </span>
     </div>
 </footer>
