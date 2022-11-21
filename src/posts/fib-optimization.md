@@ -3,7 +3,7 @@ title: Algoritmo para el cálculo de los términos de la secuencia de Fibonacci 
 description: "Se muestra una implementación eficiente para calcular los términos de la secuencia de fibonacci en tiempo
 logarítmico O(log(n))"
 author: "Miguel Angel Carrasco"
-date: 2022-11-14
+date: 2022-11-21
 ---
 
 ## Introducción
