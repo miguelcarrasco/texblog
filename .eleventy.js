@@ -3,6 +3,9 @@ const syntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
 
 module.exports = function (eleventyConfig) {
 
+    // Remove the following line if no custom domain needed for GitHub deployment
+    eleventyConfig.addPassthroughCopy("./src/CNAME");
+
     eleventyConfig.addPassthroughCopy("./src/favicon.ico");
     eleventyConfig.addPassthroughCopy("./src/css");
     eleventyConfig.addWatchTarget("./src/css");
