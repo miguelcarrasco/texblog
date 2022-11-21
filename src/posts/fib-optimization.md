@@ -93,8 +93,8 @@ donde $\varphi=\frac{1+\sqrt{5}}{2}$ y $\psi=\frac{1-\sqrt{5}}{2}$
 
 A $\varphi$ se le suele denominar la [proporción áurea](https://en.wikipedia.org/wiki/Golden_ratio).
 
-Escribí anteriormente un [artículo con la demostración de la fórmula de Binet mediante inducción fuerte
-y también derivando la fórmula usando resultados del álgebra lineal](binet-formula).
+Escribí anteriormente un [artículo con la demostración y derivación de la fórmula de Binet](../binet-formula) con
+dos demostraciones. La primera mediante inducción fuerte y la segunda derivando la fórmula usando álgebra lineal.
 Es importante revisar este artículo para comprender mejor las siguientes optimizaciones.
 
 Una implementación de la fórmula de Binet en C, podría ser la siguiente
@@ -212,7 +212,7 @@ La multiplicación de matrices es cerrada y asociativa.
 > elíptica.
 
 Podemos entonces usar la forma matricial de la relación de recurrencia de la secuencia de fibonacci que se usó para
-[derivar la fórmula de binet en el artículo anterior](binet-formula)
+[derivar la fórmula de binet en el artículo anterior](../binet-formula)
 
 $$
 \begin{bmatrix}
