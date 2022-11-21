@@ -50,5 +50,7 @@ directory to gh-pages branch
 > first, in order to generate the site inside ./public directory before publishing
 > into gh-pages branch
 
+if you use a custom domain, set the domain in build/CNAME file, otherwise remove that file
+
 ## Config
 Site configuration variables are on src/_data/site.js file
