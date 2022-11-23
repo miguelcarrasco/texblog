@@ -392,6 +392,14 @@ dl dd {
   text-align: center;
 }
 
+.paginator {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
 /* Theorem */
 .theorem {
   counter-increment: theorem;
