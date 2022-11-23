@@ -16,3 +16,11 @@ layout: base.njk
     </p>
 </div>
 {{ content | latexdisplay | latex | safe }}
+
+{% set previousPost = collections.posts | getPreviousCollectionItem(page) %}
+{% set nextPost = collections.posts | getNextCollectionItem(page) %}
+
+<div class="paginator">
+    {% if previousPost %}<a class="link" href="{{ previousPost.url }}">← anterior</a>{% else %}<a></a>{% endif %}
+    {% if nextPost %}<a class="link" href="{{ nextPost.url }}">siguiente →</a>{% else %}<a></a>{% endif %}
+</div>
